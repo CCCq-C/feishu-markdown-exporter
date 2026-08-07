@@ -17,6 +17,7 @@
 
 ## 发布前检查
 
+- 运行 `npm test && npm run package`，生成 `dist/feishu-markdown-exporter.zip`。
 - 在 Chrome Web Store 后台上传打包 ZIP。
 - 如实填写单一用途、权限理由和用户数据声明。
 - 使用真实公开文档与已授权私有文档分别验收。

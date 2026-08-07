@@ -29,7 +29,7 @@
         image: {
           token: snapshot.image?.token ?? "",
           name: snapshot.image?.name ?? "",
-          url: snapshot.image?.url ?? "",
+          url: snapshot.image?.url ?? `browser-asset://image/${block?.id ?? "unknown"}`,
         },
       };
     }
@@ -103,5 +103,40 @@
     throw new Error("The document did not finish loading. Scroll through it once and try again.");
   }
 
-  globalThis.__feishuMarkdownExtractor = { extract, getRoot, isReady, normalizeBlock };
+  function findBlock(block, targetId) {
+    if (!block) return null;
+    if (block.id === targetId) return block;
+    const nested = [...(block.children ?? []), ...(block?.innerBlockManager?.rootBlockModel?.children ?? [])];
+    for (const child of nested) {
+      const match = findBlock(child, targetId);
+      if (match) return match;
+    }
+    return null;
+  }
+
+  async function extractImage(blockId) {
+    const block = findBlock(getRoot(), blockId);
+    const image = block?.snapshot?.image;
+    if (!image || !block?.imageManager?.fetch) return null;
+    const sources = await new Promise((resolve, reject) => {
+      block.imageManager.fetch({ token: image.token, isHD: true, fuzzy: false }, {}, resolve).catch(reject);
+    });
+    if (!sources?.src) return null;
+    const response = await fetch(sources.src, { credentials: "include" });
+    if (!response.ok) throw new Error("Image download failed.");
+    const blob = await response.blob();
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
+      reader.onerror = () => reject(reader.error);
+      reader.readAsDataURL(blob);
+    });
+    return {
+      base64,
+      fileName: image.name || `image-${blockId}.${blob.type.split("/")[1] || "png"}`,
+      mimeType: blob.type || "image/png",
+    };
+  }
+
+  globalThis.__feishuMarkdownExtractor = { extract, extractImage, getRoot, isReady, normalizeBlock };
 })();

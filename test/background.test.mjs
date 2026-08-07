@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { buildDownloadRequest, isSupportedDocumentUrl } from "../src/background.js";
+import {
+  buildDownloadRequest,
+  collectImageAssets,
+  isSupportedDocumentUrl,
+  rewriteAssetLinks,
+} from "../src/background.js";
 
 test("accepts only Feishu and Lark wiki or docx documents", () => {
   assert.equal(isSupportedDocumentUrl("https://waytoagi.feishu.cn/wiki/EZvBw7pJ6iFxMVkeaoZc2TRdnil"), true);
@@ -19,4 +24,22 @@ test("builds a safe non-empty Markdown download request", () => {
 
 test("rejects empty Markdown instead of downloading an empty file", () => {
   assert.throws(() => buildDownloadRequest("Empty", "   \n"), /No readable document content/);
+});
+
+test("collects image placeholders and rewrites them to a local assets folder", () => {
+  const assets = collectImageAssets({
+    root: {
+      type: "page",
+      children: [
+        { id: "image-1", type: "image", snapshot: { image: { name: "cover.png" } }, children: [] },
+        { id: "text-1", type: "text", children: [] },
+      ],
+    },
+  });
+
+  assert.deepEqual(assets, [{ id: "image-1", placeholder: "browser-asset://image/image-1", name: "cover.png" }]);
+  assert.equal(
+    rewriteAssetLinks("![cover](browser-asset://image/image-1)", [{ ...assets[0], filename: "cover.png" }], "example-assets"),
+    "![cover](example-assets/cover.png)",
+  );
 });

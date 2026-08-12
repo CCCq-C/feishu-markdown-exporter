@@ -4,7 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "node scripts/build-extension.mjs",
     "test": "node --test",
     "package": "node scripts/package-extension.mjs"
+  },
+  "dependencies": {
+    "docx": "^9.7.1"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
   }
 }

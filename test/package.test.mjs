@@ -12,10 +12,9 @@ test("package script selects only Chrome runtime files", () => {
   assert.deepEqual(JSON.parse(result.stdout), [
     "manifest.json",
     "popup.html",
-    "src/background.js",
+    "build/background.js",
+    "build/popup.js",
     "src/extractor.js",
-    "src/markdown.js",
     "src/popup.css",
-    "src/popup.js",
   ]);
 });

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   buildDownloadRequest,
+  buildWordDownloadRequest,
   collectImageAssets,
   isSupportedDocumentUrl,
   rewriteAssetLinks,
@@ -24,6 +25,15 @@ test("builds a safe non-empty Markdown download request", () => {
 
 test("rejects empty Markdown instead of downloading an empty file", () => {
   assert.throws(() => buildDownloadRequest("Empty", "   \n"), /No readable document content/);
+});
+
+test("builds a Word download request with the expected extension and MIME type", async () => {
+  const request = await buildWordDownloadRequest("Word: guide", new Blob(["docx"], {
+    type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  }));
+
+  assert.equal(request.filename, "Word_ guide.docx");
+  assert.match(request.url, /^data:application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document;base64,/);
 });
 
 test("collects image placeholders and rewrites them to a local assets folder", () => {

@@ -7,16 +7,17 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const files = [
   "manifest.json",
   "popup.html",
-  "src/background.js",
+  "build/background.js",
+  "build/popup.js",
   "src/extractor.js",
-  "src/markdown.js",
   "src/popup.css",
-  "src/popup.js",
 ];
 
 if (process.argv.includes("--list")) {
   process.stdout.write(`${JSON.stringify(files)}\n`);
 } else {
+  const build = spawnSync(process.execPath, ["scripts/build-extension.mjs"], { cwd: root, encoding: "utf8" });
+  if (build.status !== 0) throw new Error(build.stderr || "Could not build extension files.");
   const dist = resolve(root, "dist");
   const staging = resolve(dist, "package");
   const archive = resolve(dist, "feishu-markdown-exporter.zip");

@@ -8,6 +8,6 @@ test("manifest exposes a click-to-export extension with minimal permissions", as
   assert.equal(manifest.manifest_version, 3);
   assert.equal(manifest.action.default_popup, "popup.html");
   assert.deepEqual(manifest.permissions, ["activeTab", "scripting", "downloads"]);
-  assert.equal(manifest.background.service_worker, "src/background.js");
+  assert.equal(manifest.background.service_worker, "build/background.js");
   assert.equal(manifest.background.type, "module");
 });

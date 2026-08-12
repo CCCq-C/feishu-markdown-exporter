@@ -1,4 +1,5 @@
 import { renderMarkdown } from "./markdown.js";
+import { renderWord } from "./word.js";
 
 const documentUrl = /^https:\/\/[^/]+\.(?:feishu\.cn|larkoffice\.com)\/(?:wiki|docx)\//;
 
@@ -12,6 +13,15 @@ export function buildDownloadRequest(title, markdown) {
   return {
     url: `data:text/markdown;charset=utf-8,${encodeURIComponent(markdown)}`,
     filename,
+    saveAs: false,
+  };
+}
+
+export async function buildWordDownloadRequest(title, wordDocument) {
+  if (!wordDocument || wordDocument.size === 0) throw new Error("No readable document content was found on this page.");
+  return {
+    url: await blobToDataUrl(wordDocument),
+    filename: `${sanitizeFilename(title)}.docx`,
     saveAs: false,
   };
 }
@@ -38,7 +48,7 @@ export function rewriteAssetLinks(markdown, assets, folder) {
   return assets.reduce((output, asset) => output.replaceAll(asset.placeholder, `${folder}/${asset.filename}`), markdown);
 }
 
-async function exportCurrentTab() {
+async function exportCurrentTab(format = "markdown") {
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id || !isSupportedDocumentUrl(tab.url)) {
     throw new Error("Open a readable Feishu or Lark Wiki/Docx document first.");
@@ -56,7 +66,6 @@ async function exportCurrentTab() {
   });
   const documentModel = injection?.result;
   const title = documentModel?.title;
-  const assetsFolder = `${sanitizeFilename(title)}-assets`;
   const images = collectImageAssets(documentModel);
   const downloadedImages = [];
   const usedNames = new Set();
@@ -70,18 +79,35 @@ async function exportCurrentTab() {
     const payload = imageInjection?.result;
     if (!payload?.base64) continue;
     const filename = uniqueFilename(payload.fileName || image.name, usedNames);
+    downloadedImages.push({ ...image, ...payload, fileName: filename, filename });
+  }
+  if (format === "word") {
+    const request = await buildWordDownloadRequest(title, await renderWord(documentModel, downloadedImages));
+    await chrome.downloads.download(request);
+    return { filename: request.filename };
+  }
+
+  const assetsFolder = `${sanitizeFilename(title)}-assets`;
+  for (const image of downloadedImages) {
     await chrome.downloads.download({
-      url: `data:${payload.mimeType || "image/png"};base64,${payload.base64}`,
-      filename: `${assetsFolder}/${filename}`,
+      url: `data:${image.mimeType || "image/png"};base64,${image.base64}`,
+      filename: `${assetsFolder}/${image.filename}`,
       saveAs: false,
     });
-    downloadedImages.push({ ...image, filename });
   }
   const markdown = rewriteAssetLinks(renderMarkdown(documentModel), downloadedImages, assetsFolder)
     .replaceAll("browser-asset://image/", "image-unavailable-");
   const request = buildDownloadRequest(title, markdown);
   await chrome.downloads.download(request);
   return { filename: request.filename };
+}
+
+async function blobToDataUrl(blob) {
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  let binary = "";
+  const chunkSize = 0x8000;
+  for (let index = 0; index < bytes.length; index += chunkSize) binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+  return `data:${blob.type || "application/octet-stream"};base64,${btoa(binary)}`;
 }
 
 function sanitizeFilename(value) {
@@ -107,7 +133,7 @@ function uniqueFilename(value, used) {
 if (typeof chrome !== "undefined" && chrome.runtime?.onMessage) {
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message?.type !== "export-current-tab") return undefined;
-    exportCurrentTab()
+    exportCurrentTab(message?.format)
       .then((result) => sendResponse({ ok: true, ...result }))
       .catch((error) => sendResponse({ ok: false, error: error.message }));
     return true;

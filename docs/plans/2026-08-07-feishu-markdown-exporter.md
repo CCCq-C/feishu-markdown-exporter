@@ -177,3 +177,10 @@ Load the unpacked extension in Chrome, open the provided public Wiki URL, export
 git add .gitignore README.md scripts test
 git commit -m "build: package chrome extension"
 ```
+# Markdown and Word Export Delivery Plan
+
+1. Keep the existing user-initiated, current-tab-only extraction boundary and minimal Manifest V3 permissions.
+2. Offer a popup format selector for Markdown and Word.
+3. Bundle the local `docx` generator at build time; do not load remote code or send document data to a server.
+4. Preserve the Markdown image-assets flow and embed common image formats in Word.
+5. Verify with unit tests, a generated OOXML package check, extension build, ZIP integrity check, then a manual Chrome smoke test before store submission.

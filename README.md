@@ -14,13 +14,48 @@
 
 ## 使用方式
 
+### 环境自检与自动补依赖（推荐 AI 先执行）
+
+在构建、测试或打包前，先运行：
+
+```bash
+npm run doctor -- --json
+```
+
+AI 应按返回的 `status` 执行：
+
+1. `ready`：直接运行 `npm test`、`npm run build` 或 `npm run package`。
+2. `repairable`：只缺本项目的 npm 依赖，运行 `npm run setup` 自动补齐，然后再次运行 `npm run doctor -- --json`。
+3. `manual`：存在 Node.js、npm 或系统 `zip` 等系统级前置条件问题。AI 应展示每项检查中的 `nextCommand`，取得用户同意后再执行；不能擅自修改系统、全局 npm 配置或安装浏览器软件。
+
+`npm run setup` 默认使用中国 npm 镜像 `https://registry.npmmirror.com`，仅对当前项目执行 `npm install`，不会写入全局 npm 配置：
+
+```bash
+npm run setup
+
+# 临时换用其他镜像，不修改全局设置
+npm run setup -- --registry=https://registry.npmjs.org
+# 或
+NPM_REGISTRY=https://registry.npmmirror.com npm run setup
+```
+
+若自检提示 Node.js 低于 20，已安装 nvm 的 macOS/Linux 用户可使用 Node 中国镜像安装：
+
+```bash
+export NVM_NODEJS_ORG_MIRROR=https://npmmirror.com/mirrors/node
+nvm install 20
+nvm use 20
+```
+
+若缺少打包用的 `zip` 命令，请由用户确认后执行相应系统命令：macOS 使用 `xcode-select --install`；Debian/Ubuntu 使用 `sudo apt-get install -y zip`。Windows 用户可在 WSL 中安装 `zip`，或在具备 `zip` 命令的 CI/macOS/Linux 环境打包。
+
 ### 从源码加载
 
-1. 安装 Node.js 20 或更高版本。
+1. 安装 Node.js 20 或更高版本，并先运行上面的环境自检。
 2. 在项目根目录运行：
 
    ```bash
-   npm install
+   npm run setup
    npm run build
    ```
 
@@ -57,6 +92,8 @@ npm run package
 ## 开发与验收
 
 ```bash
+npm run doctor -- --json
+npm run setup
 npm test
 npm run build
 npm run package

@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "doctor": "node scripts/environment.mjs",
+    "setup": "node scripts/setup.mjs",
     "build": "node scripts/build-extension.mjs",
     "test": "node --test",
     "package": "node scripts/package-extension.mjs"

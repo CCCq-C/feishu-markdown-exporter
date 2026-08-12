@@ -4,6 +4,8 @@
 
 > 这不是权限绕过工具：扩展只读取当前已打开、当前账号可阅读的页面，不能导出无权访问的内容。
 
+代码镜像：[GitHub](https://github.com/CCCq-C/feishu-markdown-exporter) · [Gitee](https://gitee.com/Chance-Ccc/feishu-markdown-exporter)
+
 ## 功能
 
 - Markdown：导出标题、段落、列表、待办、引用、代码、表格、链接、附件和图片；图片会下载到同名 `-assets` 文件夹。

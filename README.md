@@ -49,19 +49,29 @@ nvm use 20
 
 若缺少打包用的 `zip` 命令，请由用户确认后执行相应系统命令：macOS 使用 `xcode-select --install`；Debian/Ubuntu 使用 `sudo apt-get install -y zip`。Windows 用户可在 WSL 中安装 `zip`，或在具备 `zip` 命令的 CI/macOS/Linux 环境打包。
 
-### 从源码加载
+### 下载压缩包后，导入 Chrome
 
-1. 安装 Node.js 20 或更高版本，并先运行上面的环境自检。
-2. 在项目根目录运行：
+压缩包下载完不能直接拖进 Chrome，也不能直接选择 ZIP 文件。按下面做一次，就能导入扩展：
+
+1. 解压下载的压缩包，得到 `feishu-markdown-exporter` 文件夹。
+2. 安装 Node.js 20 或更高版本。
+3. 打开“终端”，进入刚才解压出来的文件夹。例如：
+
+   ```bash
+   cd ~/Downloads/feishu-markdown-exporter
+   ```
+
+4. 运行这一条命令：
 
    ```bash
    npm run setup
-   npm run build
    ```
 
-3. 在 Chrome 打开 `chrome://extensions`，开启“开发者模式”。
-4. 点击“加载已解压的扩展程序”，选择本项目根目录。
-5. 打开当前账号可阅读的 `*.feishu.cn/wiki|docx` 或 `*.larkoffice.com/wiki|docx` 页面，点击扩展图标，选择导出格式，再点击“导出当前文档”。
+   它会自动安装本项目需要的东西，并自动生成 Chrome 扩展文件。第一次解压安装时运行一次即可，不需要再单独运行 `npm run build`。
+
+5. 在 Chrome 地址栏打开 `chrome://extensions`，开启右上角的“开发者模式”。
+6. 点击“加载已解压的扩展程序”，选择第 1 步解压出来的 `feishu-markdown-exporter` 文件夹。不要选择 ZIP 压缩包。
+7. 打开当前账号可阅读的 `*.feishu.cn/wiki|docx` 或 `*.larkoffice.com/wiki|docx` 页面，点击扩展图标，选择导出格式，再点击“导出当前文档”。
 
 ### 使用发布包
 

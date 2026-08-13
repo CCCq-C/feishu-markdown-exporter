@@ -1,0 +1,48 @@
+:root {
+  color: #1f2937;
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+}
+
+body {
+  margin: 0;
+  min-width: 288px;
+  background: #ffffff;
+}
+
+main {
+  padding: 18px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: 17px;
+}
+
+#status {
+  min-height: 21px;
+  margin: 0 0 14px;
+  color: #4b5563;
+}
+
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #ffffff;
+  background: #1677ff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+
+button:disabled {
+  cursor: wait;
+  background: #9ca3af;
+}
+
+.hint {
+  margin: 12px 0 0;
+  color: #6b7280;
+  font-size: 12px;
+}

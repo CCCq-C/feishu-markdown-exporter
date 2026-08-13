@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Feishu Markdown Exporter",
+  "version": "0.1.0",
+  "description": "Export the currently readable Feishu or Lark document to Markdown.",
+  "permissions": ["activeTab", "scripting", "downloads"],
+  "background": {
+    "service_worker": "build/background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_title": "Export Feishu document",
+    "default_popup": "popup.html"
+  }
+}

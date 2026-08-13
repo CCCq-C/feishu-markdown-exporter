@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>飞书文档导出</title>
+    <link rel="stylesheet" href="src/popup.css">
+  </head>
+  <body>
+    <main>
+      <h1>飞书文档导出</h1>
+      <p id="status" role="status">准备就绪</p>
+      <label for="format">导出格式</label>
+      <select id="format" name="format">
+        <option value="markdown">Markdown (.md)</option>
+        <option value="word">Word (.docx)</option>
+      </select>
+      <button id="export" type="button">导出当前文档</button>
+      <p class="hint">仅导出当前页面已可阅读的内容；不会上传文档或读取 Cookie。</p>
+    </main>
+    <script type="module" src="build/popup.js"></script>
+  </body>
+</html>

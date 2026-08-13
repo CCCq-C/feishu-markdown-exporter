@@ -1,5 +1,7 @@
 .worktrees/
 dist/
 build/
+!extension/build/
+!extension/build/**
 node_modules/
 .DS_Store

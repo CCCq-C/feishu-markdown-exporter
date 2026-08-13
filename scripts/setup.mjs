@@ -33,8 +33,12 @@ function defaultRunNpm(args) {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   try {
     const result = setupProject();
+    const build = spawnSync(process.execPath, ["scripts/build-extension.mjs"], { stdio: "inherit" });
+    if (build.error || build.status !== 0) throw build.error || new Error("Build failed.");
+
     process.stdout.write(`${result.installed ? `Installed dependencies through ${result.registry}.` : "Dependencies are already installed."}\n`);
     process.stdout.write(`${formatReport(result.report)}\n`);
+    process.stdout.write("Built extension bundles successfully.\n");
   } catch (error) {
     process.stderr.write(`${error.message}\n`);
     process.exitCode = 1;

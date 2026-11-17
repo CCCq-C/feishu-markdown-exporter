@@ -105,3 +105,11 @@ unzip -t dist/feishu-markdown-exporter.zip
 ## 发布说明
 
 上传 Chrome Web Store 前，请在后台如实填写单一用途、三项权限的必要性和用户数据声明，并遵守飞书文档权限及适用法律。
+
+---
+
+## 深入学习与交流
+
+如果想要深入学习、研究或者交流，可以扫描下方二维码添加我。
+
+<img src="./contact-qr.png" alt="微信二维码" width="269" height="269">
